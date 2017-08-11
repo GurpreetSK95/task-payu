@@ -2,6 +2,8 @@ package me.gurpreetsk.task_payu;
 
 import android.app.Application;
 
+import com.facebook.stetho.Stetho;
+
 import me.gurpreetsk.task_payu.dagger.AppComponent;
 import me.gurpreetsk.task_payu.dagger.AppModule;
 import me.gurpreetsk.task_payu.dagger.DaggerAppComponent;
@@ -20,6 +22,7 @@ public class InitApplication extends Application {
     public void onCreate() {
         super.onCreate();
         appComponent = initDagger(this);
+        Stetho.initializeWithDefaults(this);
     }
 
     protected AppComponent initDagger(InitApplication application) {

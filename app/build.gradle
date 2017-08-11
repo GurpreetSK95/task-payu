@@ -71,7 +71,13 @@ dependencies {
     compile 'io.reactivex.rxjava2:rxjava:2.0.1'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    compile 'com.squareup.sqlbrite2:sqlbrite:2.0.0'
+    //simple SQL provider
+    compile "com.squareup:javapoet:1.2.0"
+    compile "ckm.simple:simple_sql_provider_annotation:1.0.6"
+    compile "ckm.simple:simple_sql_provider_processor:1.0.6"
+    //stetho
+    compile 'com.facebook.stetho:stetho:1.5.0'
     //misc-ui
-    compile 'com.rengwuxian.materialedittext:library:2.1.4'
-    compile 'de.hdodenhof:circleimageview:2.1.0'
+
 }

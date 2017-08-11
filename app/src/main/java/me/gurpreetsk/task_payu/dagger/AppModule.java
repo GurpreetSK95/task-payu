@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.squareup.sqlbrite2.SqlBrite;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -33,6 +35,12 @@ public class AppModule {
     @Singleton
     public SharedPreferences getPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(application);
+    }
+
+    @Provides
+    @Singleton
+    public SqlBrite getSqlBrite() {
+        return new SqlBrite.Builder().build();
     }
 
 }

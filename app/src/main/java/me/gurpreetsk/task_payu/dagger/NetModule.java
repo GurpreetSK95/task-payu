@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.google.gson.Gson;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -39,14 +41,14 @@ public class NetModule {
 
     @Provides
     @Singleton
-    RxJava2CallAdapterFactory provideRxCallAdapterFactory() {
-        return RxJava2CallAdapterFactory.create();
+    Gson providesGson() {
+        return new Gson();
     }
 
     @Provides
     @Singleton
-    SharedPreferences providesSharedPreferences(Application application) {
-        return PreferenceManager.getDefaultSharedPreferences(application);
+    RxJava2CallAdapterFactory provideRxCallAdapterFactory() {
+        return RxJava2CallAdapterFactory.create();
     }
 
     @Provides

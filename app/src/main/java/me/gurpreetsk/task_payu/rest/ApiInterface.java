@@ -3,7 +3,7 @@ package me.gurpreetsk.task_payu.rest;
 import java.util.List;
 
 import io.reactivex.Observable;
-import me.gurpreetsk.task_payu.model.Project;
+import me.gurpreetsk.task_payu.data.model.Project;
 import retrofit2.http.GET;
 
 /**
