@@ -1,14 +1,18 @@
 package me.gurpreetsk.task_payu.ui.MainActivity;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -23,12 +27,20 @@ import com.squareup.sqlbrite2.SqlBrite.Query;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Cancellable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import me.gurpreetsk.task_payu.InitApplication;
 import me.gurpreetsk.task_payu.R;
@@ -36,6 +48,7 @@ import me.gurpreetsk.task_payu.data.model.Project;
 import me.gurpreetsk.task_payu.data.model.ProjectsTable;
 import me.gurpreetsk.task_payu.ui.DetailsActivity.DetailsActivity;
 import me.gurpreetsk.task_payu.util.Constants;
+import me.gurpreetsk.task_payu.util.EndlessRecyclerViewScrollListener;
 import me.gurpreetsk.task_payu.util.NetworkConnection;
 
 
@@ -52,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
     ProgressBar progressBar;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.search_view)
+    SearchView searchView;
 
     @Inject
     MainPresenter presenter;
@@ -59,7 +74,9 @@ public class MainActivity extends AppCompatActivity implements MainView {
     Gson gson;
     @Inject
     SqlBrite sqlBrite;
+    BriteContentResolver resolver;
     Observable<Query> queryObservable;
+    List<Project> projects = new ArrayList<>();
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -74,29 +91,95 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         presenter.setView(this);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        if (NetworkConnection.isNetworkConnected(MainActivity.this))
+            presenter.getProjects();
+        else
+            showErrorMessage("Please connect to Internet and try again");
+
+        LinearLayoutManager manager = new LinearLayoutManager(MainActivity.this);
+        recyclerView.setLayoutManager(manager);
 //        recyclerView.addItemDecoration(new DividerItemDecoration(MainActivity.this, DividerItemDecoration.VERTICAL));
+        recyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(manager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                /**
+                 * Query the paginated API here and add to the DB.
+                 * The recycler view will be updated as SqlBrite is observing the DB for changes
+                 */
+//                showProjects();
+            }
+        });
 
-        BriteContentResolver resolver = sqlBrite.wrapContentProvider(getContentResolver(), Schedulers.io());
-
+        resolver = sqlBrite.wrapContentProvider(getContentResolver(), Schedulers.io());
         queryObservable = resolver.createQuery(
                 ProjectsTable.CONTENT_URI, null, null, null, null, true);
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (NetworkConnection.isNetworkConnected(MainActivity.this))
-            presenter.getProjects();
-        else
-            showErrorMessage("Please connect to Internet and try again");
+        showProjects();
+//  TODO
+//        Observable<String> searchObservable = getTextChangeObservable();
+//        searchObservable.subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(query -> {
+//                    queryObservable = resolver.createQuery(
+//                            ProjectsTable.CONTENT_URI, null, "blurb LIKE ?", new String[]{query}, null, true);
+//                    showProjects();
+//                })
+//        searchView.setOnCloseListener(() -> {
+//            queryObservable = resolver.createQuery(
+//                    ProjectsTable.CONTENT_URI, null, null, null, null, true);
+//            showProjects();
+//            return true;
+//        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //noinspection SimplifiableIfStatement
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Toast.makeText(this, "Created by Gurpreet Singh", Toast.LENGTH_SHORT).show();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void launchProjectDetailActivity(Project project) {
         Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
         intent.putExtra(Constants.KEY_PROJECT, gson.toJson(project));
         startActivity(intent);
+    }
+
+    private Observable<String> getTextChangeObservable() {
+        Observable<String> observable = Observable.create(emitter -> {
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    emitter.onNext(query);
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    emitter.onNext(newText);
+                    return true;
+                }
+            });
+            emitter.setCancellable(() -> {
+                searchView.setOnQueryTextListener(null);
+            });
+        });
+
+        return observable.filter(s -> s.length() > 2).debounce(300, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -121,14 +204,11 @@ public class MainActivity extends AppCompatActivity implements MainView {
      */
     @Override
     public void showProjects() {
-        List<Project> projects = new ArrayList<>();
         queryObservable.distinct()
                 .subscribe(query -> {
                     Cursor cursor = query.run();
                     if (cursor != null) {
-                        projects.clear();
                         cursor.moveToFirst();
-                        Log.d(TAG, "showProjects: " + cursor.getCount());
                         for (int i = 0; i < cursor.getCount(); i++) {
                             Project project = new Project(cursor.getInt(0), cursor.getInt(1),
                                     cursor.getString(2), cursor.getString(3), cursor.getString(4),
@@ -155,9 +235,10 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     @Override
     public void insertInDb(List<Project> projects) {
+        ContentValues[] contentValues = new ContentValues[projects.size()];
         for (int i = 0; i < projects.size(); i++)
-            getContentResolver().insert(ProjectsTable.CONTENT_URI,
-                    ProjectsTable.getContentValues(projects.get(i), true));
+            contentValues[i] = ProjectsTable.getContentValues(projects.get(i), true);
+        getContentResolver().bulkInsert(ProjectsTable.CONTENT_URI, contentValues);
     }
 
     /**

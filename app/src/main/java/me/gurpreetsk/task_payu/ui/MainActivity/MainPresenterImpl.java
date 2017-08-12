@@ -1,6 +1,7 @@
 package me.gurpreetsk.task_payu.ui.MainActivity;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.List;
 
@@ -64,6 +65,7 @@ public class MainPresenterImpl implements MainPresenter {
 
                     @Override
                     public void onError(Throwable e) {
+                        Log.e(TAG, "onError: ", e);
                         view.showErrorMessage(e.getMessage());
                     }
 

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Task-PayU</string>
+    <string name="action_settings">Credits</string>
+    <string name="view_project">View Project</string>
 </resources>

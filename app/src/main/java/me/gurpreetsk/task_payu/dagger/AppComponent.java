@@ -24,8 +24,8 @@ public interface AppComponent {
 
     void inject(MainPresenterImpl target);
 
-//    void inject(DetailsActivity target);
-//
-//    void inject(DetailsPresenterImpl target);
+    void inject(DetailsActivity target);
+
+    void inject(DetailsPresenterImpl target);
 
 }
