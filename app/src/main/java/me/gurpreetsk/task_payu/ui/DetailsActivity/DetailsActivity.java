@@ -55,6 +55,8 @@ public class DetailsActivity extends AppCompatActivity implements DetailsView {
 
     @Inject
     Gson gson;
+    @Inject
+    DetailsPresenter presenter;
 
     Project project;
 
@@ -68,10 +70,13 @@ public class DetailsActivity extends AppCompatActivity implements DetailsView {
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
 
+        presenter.setView(this);
+
         project = gson.fromJson(getIntent().getStringExtra(Constants.KEY_PROJECT), Project.class);
 
-        loadImage();
+        presenter.getImage(Constants.KICKSTARTER_BASE_URL + project.getUrl());
         setUi();
+
     }
 
     private void setUi() {
@@ -80,59 +85,6 @@ public class DetailsActivity extends AppCompatActivity implements DetailsView {
         textviewDescription.setText(project.getBlurb());
         textviewOwnerOrigin.setText("Started by " + project.getBy()
                 + " in " + project.getLocation() + ", " + project.getCountry());
-    }
-
-    private void loadImage() {
-        Observable.create((ObservableOnSubscribe<String>) emitter ->
-                emitter.onNext(Constants.KICKSTARTER_BASE_URL + project.getUrl()))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(s -> showLoading())
-                .observeOn(Schedulers.io())
-                .map(url -> {
-                    String imageUrl = "";
-                    try {
-                        Document doc = Jsoup.connect(url).get();
-                        Elements img = doc.getElementsByClass("js-feature-image");
-                        imageUrl = img.get(0).absUrl("src");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Log.d(TAG, "loadImage: " + imageUrl);
-
-                    return imageUrl;
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>() {
-                    Disposable d;
-
-                    @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-                        this.d = d;
-                    }
-
-                    @Override
-                    public void onNext(@NonNull String s) {
-                        Log.d(TAG, "onNext: " + s);
-                        Picasso.with(DetailsActivity.this)
-                                .load(s)
-                                .into(imageviewProjectImage);
-                        hideLoading();
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        Log.e(TAG, "onError: ", e);
-                        showErrorMessage(e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        if (!d.isDisposed())
-                            d.dispose();
-                        hideLoading();
-                    }
-                });
     }
 
     @Override
@@ -152,6 +104,13 @@ public class DetailsActivity extends AppCompatActivity implements DetailsView {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW,
                 Uri.parse(Constants.KICKSTARTER_BASE_URL + project.getUrl()));
         startActivity(browserIntent);
+    }
+
+    @Override
+    public void setImage(String image) {
+        Picasso.with(DetailsActivity.this)
+                .load(image)
+                .into(imageviewProjectImage);
     }
 
     @Override

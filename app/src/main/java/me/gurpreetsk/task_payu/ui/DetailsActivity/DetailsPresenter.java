@@ -5,4 +5,9 @@ package me.gurpreetsk.task_payu.ui.DetailsActivity;
  */
 
 public interface DetailsPresenter {
+
+    void setView(DetailsView view);
+
+    void getImage(String url);
+
 }

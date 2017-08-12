@@ -12,6 +12,8 @@ interface DetailsView {
 
     void openLink();
 
+    void setImage(String image);
+
     void showErrorMessage(String error);
 
 }

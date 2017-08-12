@@ -40,10 +40,10 @@ public class MainPresenterImpl implements MainPresenter {
 
     @Override
     public void getProjects() {
-        view.showLoading();
         apiClient.getProjects()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .retry(3)
                 .subscribe(new Observer<List<Project>>() {
                     Disposable d;
 
@@ -67,6 +67,7 @@ public class MainPresenterImpl implements MainPresenter {
                     public void onError(Throwable e) {
                         Log.e(TAG, "onError: ", e);
                         view.showErrorMessage(e.getMessage());
+                        view.hideLoading();
                     }
 
                     @Override

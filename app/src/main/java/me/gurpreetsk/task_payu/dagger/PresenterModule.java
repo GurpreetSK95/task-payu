@@ -6,6 +6,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import me.gurpreetsk.task_payu.ui.DetailsActivity.DetailsPresenter;
+import me.gurpreetsk.task_payu.ui.DetailsActivity.DetailsPresenterImpl;
 import me.gurpreetsk.task_payu.ui.MainActivity.MainPresenter;
 import me.gurpreetsk.task_payu.ui.MainActivity.MainPresenterImpl;
 
@@ -22,10 +24,10 @@ public class PresenterModule {
         return new MainPresenterImpl(context);
     }
 
-//    @Provides
-//    @Singleton
-//    DetailsPresenter provideDetailsPresenter(Context context) {
-//        return new DetailsPresenterImpl(context);
-//    }
+    @Provides
+    @Singleton
+    DetailsPresenter provideDetailsPresenter(Context context) {
+        return new DetailsPresenterImpl(context);
+    }
 
 }
