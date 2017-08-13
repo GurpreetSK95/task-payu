@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 //                        .subscribe(q -> {
 //                            Cursor cursor = q.run();
                 Cursor cursor = getContentResolver().query(ProjectsTable.CONTENT_URI, null,
-                        "title LIKE %s\"" + query + "%s\"", null, null);
+                        "title LIKE \"%" + query + "%\"", null, null);
                 if (cursor != null) {
                     cursor.moveToFirst();
                     Log.d(TAG, "onQueryTextSubmit: count: " + cursor.getCount());
