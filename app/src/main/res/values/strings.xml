@@ -3,4 +3,5 @@
     <string name="action_settings">Credits</string>
     <string name="view_project">View Project</string>
     <string name="desc_project_image">Project image</string>
+    <string name="action_favourites">Favourites</string>
 </resources>

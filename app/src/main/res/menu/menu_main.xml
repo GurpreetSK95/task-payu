@@ -4,6 +4,13 @@
       tools:context=".ui.SearchActivity.MainActivity">
 
     <item
+        android:id="@+id/favourites"
+        android:icon="@drawable/ic_favorite_red"
+        android:orderInCategory="4"
+        android:title="@string/action_favourites"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"

@@ -13,7 +13,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".ui.MainActivity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -23,11 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.DetailsActivity.DetailsActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".ui.MainActivity.MainActivity">
+            android:parentActivityName=".ui.MainActivity.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity.MainActivity"/>
@@ -38,6 +36,13 @@
             android:authorities="me.gurpreetsk.task_payu"
             android:exported="false"/>
 
+        <activity
+            android:name=".ui.FavouritesActivity.FavouritesActivity"
+            android:parentActivityName=".ui.MainActivity.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity.MainActivity"/>
+        </activity>
     </application>
 
 </manifest>

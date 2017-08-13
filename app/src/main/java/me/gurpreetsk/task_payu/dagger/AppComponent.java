@@ -5,6 +5,8 @@ import javax.inject.Singleton;
 import dagger.Component;
 import me.gurpreetsk.task_payu.ui.DetailsActivity.DetailsActivity;
 import me.gurpreetsk.task_payu.ui.DetailsActivity.DetailsPresenterImpl;
+import me.gurpreetsk.task_payu.ui.FavouritesActivity.FavouritesActivity;
+import me.gurpreetsk.task_payu.ui.FavouritesActivity.FavouritesPresenterImpl;
 import me.gurpreetsk.task_payu.ui.MainActivity.MainActivity;
 import me.gurpreetsk.task_payu.ui.MainActivity.MainPresenterImpl;
 
@@ -27,5 +29,9 @@ public interface AppComponent {
     void inject(DetailsActivity target);
 
     void inject(DetailsPresenterImpl target);
+
+    void inject(FavouritesActivity target);
+
+    void inject(FavouritesPresenterImpl target);
 
 }

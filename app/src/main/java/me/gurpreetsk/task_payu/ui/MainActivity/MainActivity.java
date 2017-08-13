@@ -39,6 +39,7 @@ import me.gurpreetsk.task_payu.R;
 import me.gurpreetsk.task_payu.data.model.Project;
 import me.gurpreetsk.task_payu.data.model.ProjectsTable;
 import me.gurpreetsk.task_payu.ui.DetailsActivity.DetailsActivity;
+import me.gurpreetsk.task_payu.ui.FavouritesActivity.FavouritesActivity;
 import me.gurpreetsk.task_payu.util.Constants;
 import me.gurpreetsk.task_payu.util.EndlessRecyclerViewScrollListener;
 import me.gurpreetsk.task_payu.util.NetworkConnection;
@@ -175,6 +176,9 @@ public class MainActivity extends AppCompatActivity implements MainView {
             case R.id.action_settings:
                 Toast.makeText(this, "Created by Gurpreet Singh", Toast.LENGTH_SHORT).show();
                 return true;
+            case R.id.favourites:
+                startActivity(new Intent(MainActivity.this, FavouritesActivity.class));
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

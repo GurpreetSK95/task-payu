@@ -8,6 +8,8 @@ import dagger.Module;
 import dagger.Provides;
 import me.gurpreetsk.task_payu.ui.DetailsActivity.DetailsPresenter;
 import me.gurpreetsk.task_payu.ui.DetailsActivity.DetailsPresenterImpl;
+import me.gurpreetsk.task_payu.ui.FavouritesActivity.FavouritesPresenter;
+import me.gurpreetsk.task_payu.ui.FavouritesActivity.FavouritesPresenterImpl;
 import me.gurpreetsk.task_payu.ui.MainActivity.MainPresenter;
 import me.gurpreetsk.task_payu.ui.MainActivity.MainPresenterImpl;
 
@@ -28,6 +30,12 @@ public class PresenterModule {
     @Singleton
     DetailsPresenter provideDetailsPresenter(Context context) {
         return new DetailsPresenterImpl(context);
+    }
+
+    @Provides
+    @Singleton
+    FavouritesPresenter providesFavouritesPresenter(Context context) {
+        return new FavouritesPresenterImpl(context);
     }
 
 }
