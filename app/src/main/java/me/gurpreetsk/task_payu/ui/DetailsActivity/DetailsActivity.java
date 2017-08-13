@@ -1,11 +1,18 @@
 package me.gurpreetsk.task_payu.ui.DetailsActivity;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -14,30 +21,16 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
-
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
 import me.gurpreetsk.task_payu.InitApplication;
 import me.gurpreetsk.task_payu.R;
+import me.gurpreetsk.task_payu.data.model.FavoritesTable;
 import me.gurpreetsk.task_payu.data.model.Project;
+import me.gurpreetsk.task_payu.data.model.ProjectsTable;
 import me.gurpreetsk.task_payu.util.Constants;
 
 public class DetailsActivity extends AppCompatActivity implements DetailsView {
@@ -52,6 +45,10 @@ public class DetailsActivity extends AppCompatActivity implements DetailsView {
     TextView textviewOwnerOrigin;
     @BindView(R.id.loading_bar)
     ProgressBar loadingProgressBar;
+    @BindView(R.id.imagebutton_fav)
+    ImageButton favButton;
+    @BindView(R.id.toolbar_details)
+    Toolbar toolbar;
 
     @Inject
     Gson gson;
@@ -70,6 +67,9 @@ public class DetailsActivity extends AppCompatActivity implements DetailsView {
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
 
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         presenter.setView(this);
 
         project = gson.fromJson(getIntent().getStringExtra(Constants.KEY_PROJECT), Project.class);
@@ -85,6 +85,36 @@ public class DetailsActivity extends AppCompatActivity implements DetailsView {
         textviewDescription.setText(project.getBlurb());
         textviewOwnerOrigin.setText("Started by " + project.getBy()
                 + " in " + project.getLocation() + ", " + project.getCountry());
+        Cursor isFav = getContentResolver().query(FavoritesTable.CONTENT_URI, null,
+                "title = \"" + project.getTitle() + "\"", null, null);
+        try {
+            if (isFav != null && isFav.getCount() == 1)
+                favButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_red));
+            else
+                favButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_white));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (isFav != null)
+                isFav.close();
+        }
+    }
+
+    @OnClick(R.id.imagebutton_fav)
+    public void manipulateFavDB() {
+        try {
+            getContentResolver().insert(FavoritesTable.CONTENT_URI,
+                    ProjectsTable.getContentValues(project, true));
+            favButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_red));
+            Toast.makeText(this, "Favourite added!", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+//            if (e instanceof SQLiteConstraintException) {
+            showErrorMessage("Favourite removed");
+            favButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_white));
+            getContentResolver()
+                    .delete(FavoritesTable.CONTENT_URI, "title = \"" + project.getTitle() + "\"", null);
+        }
     }
 
     @Override

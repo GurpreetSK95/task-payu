@@ -27,7 +27,6 @@ import com.squareup.sqlbrite2.SqlBrite.Query;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -112,21 +111,55 @@ public class MainActivity extends AppCompatActivity implements MainView {
     protected void onStart() {
         super.onStart();
         showProjects();
-//  TODO
-//        Observable<String> searchObservable = getTextChangeObservable();
-//        searchObservable.subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(query -> {
-//                    queryObservable = resolver.createQuery(
-//                            ProjectsTable.CONTENT_URI, null, "blurb LIKE ?", new String[]{query}, null, true);
-//                    showProjects();
-//                })
-//        searchView.setOnCloseListener(() -> {
-//            queryObservable = resolver.createQuery(
-//                    ProjectsTable.CONTENT_URI, null, null, null, null, true);
-//            showProjects();
-//            return true;
-//        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d(TAG, "onQueryTextSubmit: " + query);
+                List<Project> projects = new ArrayList<>();
+                projects.clear();
+                //TODO: set
+                Observable<Query> results = resolver.createQuery(
+                        ProjectsTable.CONTENT_URI, null, "blurb LIKE ?",
+                        new String[]{"%s" + query + "%s"}, null, true);
+                results.distinct()
+                        .subscribe(q -> {
+                            Cursor cursor = q.run();
+                            if (cursor != null) {
+                                cursor.moveToFirst();
+                                Log.d(TAG, "onQueryTextSubmit: count: " + cursor.getCount());
+                                for (int i = 0; i < cursor.getCount(); i++) {
+                                    Project project = new Project(cursor.getInt(0), cursor.getInt(1),
+                                            cursor.getString(2), cursor.getString(3), cursor.getString(4),
+                                            cursor.getString(5), cursor.getString(6), cursor.getString(7),
+                                            cursor.getInt(8), cursor.getString(9), cursor.getString(10),
+                                            cursor.getString(11), cursor.getString(12), cursor.getString(13));
+                                    projects.add(project);
+                                    try {
+                                        cursor.moveToNext();
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "showProjects: ", e);
+                                    }
+                                }
+                            }
+                        });
+                recyclerView.setAdapter(new ProjectsAdapter(projects));
+//                recyclerView.getAdapter().notifyDataSetChanged();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        searchView.setOnCloseListener(() -> {
+            queryObservable = resolver.createQuery(
+                    ProjectsTable.CONTENT_URI, null, null, null, null, true);
+            showProjects();
+            return true;
+        });
+
     }
 
     @Override
@@ -152,28 +185,25 @@ public class MainActivity extends AppCompatActivity implements MainView {
         startActivity(intent);
     }
 
-    private Observable<String> getTextChangeObservable() {
-        Observable<String> observable = Observable.create(emitter -> {
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    emitter.onNext(query);
-                    return false;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    emitter.onNext(newText);
-                    return true;
-                }
-            });
-            emitter.setCancellable(() -> {
-                searchView.setOnQueryTextListener(null);
-            });
-        });
-
-        return observable.filter(s -> s.length() > 2).debounce(300, TimeUnit.MILLISECONDS);
-    }
+//    private Observable<String> getTextChangeObservable() {
+//        Observable<String> observable = Observable.create(emitter -> {
+//            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//                @Override
+//                public boolean onQueryTextSubmit(String query) {
+//                    return false;
+//                }
+//
+//                @Override
+//                public boolean onQueryTextChange(String newText) {
+////                    emitter.onNext(newText);
+//                    return true;
+//                }
+//            });
+//            emitter.setCancellable(() -> searchView.setOnQueryTextListener(null));
+//        });
+//
+//        return observable.filter(s -> s.length() > 2).debounce(300, TimeUnit.MILLISECONDS);
+//    }
 
     /**
      * Show loading dialog
@@ -226,6 +256,11 @@ public class MainActivity extends AppCompatActivity implements MainView {
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Bulk insert into to DB
+     *
+     * @param projects projects to insert
+     */
     @Override
     public void insertInDb(List<Project> projects) {
         ContentValues[] contentValues = new ContentValues[projects.size()];

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:context="me.gurpreetsk.payu.activity.DetailsActivity">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_4dp">
+
+            <ImageView
+                android:id="@+id/imageview_details"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:scaleType="fitXY"
+                android:contentDescription="@string/desc_project_image"/>
+
+            <ProgressBar
+                android:id="@+id/loading_bar"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/textview_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/margin_4dp"
+            android:alpha="0.6"
+            android:background="@android:color/black"
+            android:gravity="center"
+            android:minHeight="?actionBarSize"
+            android:padding="@dimen/margin_4dp"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_large"/>
+
+
+        <TextView
+            android:id="@+id/textview_owner_origin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_8dp"/>
+
+        <TextView
+            android:id="@+id/textview_strength"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_8dp"/>
+
+        <Button
+            android:id="@+id/button_view_project"
+            style="?buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_16dp"
+            android:text="@string/view_project"/>
+
+    </LinearLayout>
+</ScrollView>

@@ -7,11 +7,11 @@ import ckm.simple.sql_provider.annotation.SimpleSQLColumn;
 import ckm.simple.sql_provider.annotation.SimpleSQLTable;
 
 /**
- * Model class to represent a kickstarter project
+ * Model class to represent a favourite kickstarter project
  */
 
-@SimpleSQLTable(table = "projects", provider = "PayuProvider")
-public class Project {
+@SimpleSQLTable(table = "favorites", provider = "PayuProvider")
+public class Favourite {
 
     @SerializedName("s.no")
     @SimpleSQLColumn("s_no")
@@ -71,10 +71,10 @@ public class Project {
     private String url;
 
 
-    public Project() {
+    public Favourite() {
     }
 
-    public Project(int sNo, int amtPledged, String blurb, String by, String country,
+    public Favourite(int sNo, int amtPledged, String blurb, String by, String country,
                    String currency, String endTime, String location, int percentageFunded,
                    String numBackers, String state, String title, String type, String url) {
         this.sNo = sNo;

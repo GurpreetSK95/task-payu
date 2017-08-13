@@ -24,7 +24,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.DetailsActivity.DetailsActivity">
+        <activity
+            android:name=".ui.DetailsActivity.DetailsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".ui.MainActivity.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity.MainActivity"/>
         </activity>
 
         <provider
