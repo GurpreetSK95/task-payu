@@ -10,10 +10,6 @@ import me.gurpreetsk.task_payu.ui.FavouritesActivity.FavouritesPresenterImpl;
 import me.gurpreetsk.task_payu.ui.MainActivity.MainActivity;
 import me.gurpreetsk.task_payu.ui.MainActivity.MainPresenterImpl;
 
-/**
- * Created by Gurpreet on 11/08/17.
- */
-
 @Singleton
 @Component(modules = {
         AppModule.class,

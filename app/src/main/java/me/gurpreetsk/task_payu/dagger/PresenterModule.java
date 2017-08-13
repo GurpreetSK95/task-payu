@@ -13,9 +13,6 @@ import me.gurpreetsk.task_payu.ui.FavouritesActivity.FavouritesPresenterImpl;
 import me.gurpreetsk.task_payu.ui.MainActivity.MainPresenter;
 import me.gurpreetsk.task_payu.ui.MainActivity.MainPresenterImpl;
 
-/**
- * Created by Gurpreet on 11/08/17.
- */
 
 @Module
 public class PresenterModule {

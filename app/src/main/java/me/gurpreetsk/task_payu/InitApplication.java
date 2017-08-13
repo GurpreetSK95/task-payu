@@ -10,10 +10,6 @@ import me.gurpreetsk.task_payu.dagger.DaggerAppComponent;
 import me.gurpreetsk.task_payu.dagger.NetModule;
 import me.gurpreetsk.task_payu.dagger.PresenterModule;
 
-/**
- * Created by Gurpreet on 11/08/17.
- */
-
 public class InitApplication extends Application {
 
     private AppComponent appComponent;

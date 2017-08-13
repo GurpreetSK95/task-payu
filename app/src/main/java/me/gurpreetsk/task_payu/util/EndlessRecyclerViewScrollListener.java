@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
 /**
- * Created by Gurpreet on 11/08/17.
  * Util class to implement endless scrolling in the project RecyclerView
  */
 

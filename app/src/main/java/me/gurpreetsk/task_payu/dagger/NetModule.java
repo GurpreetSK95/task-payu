@@ -1,9 +1,5 @@
 package me.gurpreetsk.task_payu.dagger;
 
-import android.app.Application;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-
 import com.google.gson.Gson;
 
 import javax.inject.Named;
@@ -18,9 +14,6 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by Gurpreet on 11/08/17.
- */
 
 @Module
 public class NetModule {

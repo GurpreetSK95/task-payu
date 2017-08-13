@@ -16,7 +16,6 @@ import me.gurpreetsk.task_payu.data.model.Project;
 import me.gurpreetsk.task_payu.rest.ApiInterface;
 
 /**
- * Created by Gurpreet on 11/08/17.
  * Presenter for handling all the business logic for MainActivity
  */
 
