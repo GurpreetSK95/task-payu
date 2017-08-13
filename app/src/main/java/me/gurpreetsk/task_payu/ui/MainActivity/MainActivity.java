@@ -119,13 +119,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 Log.d(TAG, "onQueryTextSubmit: " + query);
                 List<Project> projects = new ArrayList<>();
                 projects.clear();
-                //TODO: set
-//                Observable<Query> results = resolver.createQuery(
-//                        ProjectsTable.CONTENT_URI, null, "blurb LIKE ?",
-//                        new String[]{"%s" + query + "%s"}, null, true);
-//                results.distinct()
-//                        .subscribe(q -> {
-//                            Cursor cursor = q.run();
                 Cursor cursor = getContentResolver().query(ProjectsTable.CONTENT_URI, null,
                         "title LIKE \"%" + query + "%\"", null, null);
                 if (cursor != null) {
@@ -146,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
                     }
                     cursor.close();
                 }
-//                        });
                 recyclerView.setAdapter(new ProjectsAdapter(projects));
                 recyclerView.getAdapter().notifyDataSetChanged();
                 return true;
