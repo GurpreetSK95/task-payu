@@ -84,9 +84,10 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         presenter.setView(this);
 
-        if (NetworkConnection.isNetworkConnected(MainActivity.this))
+        if (NetworkConnection.isNetworkConnected(MainActivity.this)) {
             presenter.getProjects();
-        else
+            showLoading();
+        } else
             showErrorMessage("Please connect to Internet and try again");
 
         LinearLayoutManager manager = new LinearLayoutManager(MainActivity.this);
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         resolver = sqlBrite.wrapContentProvider(getContentResolver(), Schedulers.io());
         queryObservable = resolver.createQuery(
                 ProjectsTable.CONTENT_URI, null, null, null, null, true);
+
     }
 
     @Override
@@ -149,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 return false;
             }
         });
+
         searchView.setOnCloseListener(() -> {
             queryObservable = resolver.createQuery(
                     ProjectsTable.CONTENT_URI, null, null, null, null, true);
@@ -156,6 +159,12 @@ public class MainActivity extends AppCompatActivity implements MainView {
             return true;
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showProjects();
     }
 
     @Override

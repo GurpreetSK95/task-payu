@@ -54,13 +54,12 @@ public class MainPresenterImpl implements MainPresenter {
 
                     @Override
                     public void onNext(List<Project> projects) {
+                        view.showLoading();
                         try {
-                            view.showLoading();
                             view.insertInDb(projects);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        view.showProjects();
                     }
 
                     @Override
@@ -75,6 +74,7 @@ public class MainPresenterImpl implements MainPresenter {
                         if (!d.isDisposed())
                             d.dispose();
                         view.hideLoading();
+                        view.showProjects();
                     }
                 });
     }
