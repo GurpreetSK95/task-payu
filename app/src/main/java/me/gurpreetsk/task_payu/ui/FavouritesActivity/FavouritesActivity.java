@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -61,7 +62,16 @@ public class FavouritesActivity extends AppCompatActivity implements FavouritesV
 
         presenter.setView(this);
         presenter.getFavourites();
+        setTitle("Favourites");
 
+        recyclerView.setLayoutManager(new LinearLayoutManager(FavouritesActivity.this));
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
     }
 
     @Override
@@ -77,32 +87,31 @@ public class FavouritesActivity extends AppCompatActivity implements FavouritesV
 
     @Override
     public void showFavourites() {
-        BriteContentResolver resolver = sqlBrite.wrapContentProvider(getContentResolver(), Schedulers.io());
-        Observable<SqlBrite.Query> queryObservable = resolver.createQuery(
-                FavoritesTable.CONTENT_URI, null, null, null, null, true);
+        Cursor cursor = getContentResolver().query(FavoritesTable.CONTENT_URI, null, null, null, null);
         List<Favourite> favourites = new ArrayList<>();
-        queryObservable.subscribe(query -> {
-            Cursor cursor = query.run();
-            if (cursor != null) {
-                cursor.moveToFirst();
-                for (int i = 0; i < cursor.getCount(); i++) {
-                    Favourite favourite = new Favourite(cursor.getInt(0), cursor.getInt(1),
-                            cursor.getString(2), cursor.getString(3), cursor.getString(4),
-                            cursor.getString(5), cursor.getString(6), cursor.getString(7),
-                            cursor.getInt(8), cursor.getString(9), cursor.getString(10),
-                            cursor.getString(11), cursor.getString(12), cursor.getString(13));
-                    favourites.add(favourite);
-                    try {
-                        cursor.moveToNext();
-                    } catch (Exception e) {
-                        Log.e(TAG, "showProjects: ", e);
-                    }
+        if (cursor != null) {
+            cursor.moveToFirst();
+            for (int i = 0; i < cursor.getCount(); i++) {
+                Favourite favourite = new Favourite(cursor.getInt(0), cursor.getInt(1),
+                        cursor.getString(2), cursor.getString(3), cursor.getString(4),
+                        cursor.getString(5), cursor.getString(6), cursor.getString(7),
+                        cursor.getInt(8), cursor.getString(9), cursor.getString(10),
+                        cursor.getString(11), cursor.getString(12), cursor.getString(13));
+                favourites.add(favourite);
+                try {
+                    cursor.moveToNext();
+                } catch (Exception e) {
+                    Log.e(TAG, "showFavs: ", e);
                 }
             }
-        });
+        }
+//        });
         Log.d(TAG, "showFavourites: " + favourites.size());
         recyclerView.setAdapter(new FavouritesAdapter(favourites));
         recyclerView.getAdapter().notifyDataSetChanged();
+        if (cursor != null)
+            cursor.close();
+
     }
 
     @Override

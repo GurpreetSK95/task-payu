@@ -120,32 +120,35 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 List<Project> projects = new ArrayList<>();
                 projects.clear();
                 //TODO: set
-                Observable<Query> results = resolver.createQuery(
-                        ProjectsTable.CONTENT_URI, null, "blurb LIKE ?",
-                        new String[]{"%s" + query + "%s"}, null, true);
-                results.distinct()
-                        .subscribe(q -> {
-                            Cursor cursor = q.run();
-                            if (cursor != null) {
-                                cursor.moveToFirst();
-                                Log.d(TAG, "onQueryTextSubmit: count: " + cursor.getCount());
-                                for (int i = 0; i < cursor.getCount(); i++) {
-                                    Project project = new Project(cursor.getInt(0), cursor.getInt(1),
-                                            cursor.getString(2), cursor.getString(3), cursor.getString(4),
-                                            cursor.getString(5), cursor.getString(6), cursor.getString(7),
-                                            cursor.getInt(8), cursor.getString(9), cursor.getString(10),
-                                            cursor.getString(11), cursor.getString(12), cursor.getString(13));
-                                    projects.add(project);
-                                    try {
-                                        cursor.moveToNext();
-                                    } catch (Exception e) {
-                                        Log.e(TAG, "showProjects: ", e);
-                                    }
-                                }
-                            }
-                        });
+//                Observable<Query> results = resolver.createQuery(
+//                        ProjectsTable.CONTENT_URI, null, "blurb LIKE ?",
+//                        new String[]{"%s" + query + "%s"}, null, true);
+//                results.distinct()
+//                        .subscribe(q -> {
+//                            Cursor cursor = q.run();
+                Cursor cursor = getContentResolver().query(ProjectsTable.CONTENT_URI, null,
+                        "title LIKE %s\"" + query + "%s\"", null, null);
+                if (cursor != null) {
+                    cursor.moveToFirst();
+                    Log.d(TAG, "onQueryTextSubmit: count: " + cursor.getCount());
+                    for (int i = 0; i < cursor.getCount(); i++) {
+                        Project project = new Project(cursor.getInt(0), cursor.getInt(1),
+                                cursor.getString(2), cursor.getString(3), cursor.getString(4),
+                                cursor.getString(5), cursor.getString(6), cursor.getString(7),
+                                cursor.getInt(8), cursor.getString(9), cursor.getString(10),
+                                cursor.getString(11), cursor.getString(12), cursor.getString(13));
+                        projects.add(project);
+                        try {
+                            cursor.moveToNext();
+                        } catch (Exception e) {
+                            Log.e(TAG, "showProjects: ", e);
+                        }
+                    }
+                    cursor.close();
+                }
+//                        });
                 recyclerView.setAdapter(new ProjectsAdapter(projects));
-//                recyclerView.getAdapter().notifyDataSetChanged();
+                recyclerView.getAdapter().notifyDataSetChanged();
                 return true;
             }
 

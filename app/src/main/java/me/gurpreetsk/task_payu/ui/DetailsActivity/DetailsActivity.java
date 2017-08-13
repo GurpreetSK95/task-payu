@@ -80,6 +80,7 @@ public class DetailsActivity extends AppCompatActivity implements DetailsView {
     }
 
     private void setUi() {
+        setTitle(project.getTitle());
         textviewStrength.setText("Amount pledged: " + project.getCurrency().toUpperCase() + " "
                 + project.getAmtPledged() + ", backed by " + project.getNumBackers() + " individuals.");
         textviewDescription.setText(project.getBlurb());
