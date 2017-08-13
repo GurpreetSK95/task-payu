@@ -44,7 +44,7 @@ public class DetailsPresenterImpl implements DetailsPresenter {
     @Override
     public void getImage(String url) {
         Observable.create((ObservableOnSubscribe<String>) emitter ->
-                emitter.onNext(Constants.KICKSTARTER_BASE_URL + url))
+                emitter.onNext(url))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(s -> view.showLoading())
@@ -58,8 +58,6 @@ public class DetailsPresenterImpl implements DetailsPresenter {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    Log.d(TAG, "loadImage: " + imageUrl);
-
                     return imageUrl;
                 })
                 .retry(5)

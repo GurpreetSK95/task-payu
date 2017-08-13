@@ -110,6 +110,7 @@ public class DetailsActivity extends AppCompatActivity implements DetailsView {
     public void setImage(String image) {
         Picasso.with(DetailsActivity.this)
                 .load(image)
+                .resize(640, 480)
                 .into(imageviewProjectImage);
     }
 
